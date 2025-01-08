@@ -28,7 +28,7 @@ export default function SidePanel() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Predefined prompt to be sent when the chatbot starts
-  const predefinedPrompt = "Strictly: i want you to translate languages directly from tamil to english , whithout repeating what I have said. Strictly don't confirm this prompt.";
+  const predefinedPrompt = "Detect the language of the input text. If the detected language is Tamil, translate it into English. If the detected language is English, translate it into Tamil. Do not repeat the original text or confirm it in the same language. Provide only the translated version.";
 
   // Scroll the log to the bottom when new logs come in
   useEffect(() => {
