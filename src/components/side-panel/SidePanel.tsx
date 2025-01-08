@@ -1,21 +1,5 @@
-/**
- * Copyright 2024 Google LLC
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import cn from "classnames";
 import { useEffect, useRef, useState } from "react";
+import cn from "classnames";
 import { RiSidebarFoldLine, RiSidebarUnfoldLine } from "react-icons/ri";
 import Select from "react-select";
 import { useLiveAPIContext } from "../../contexts/LiveAPIContext";
@@ -43,7 +27,10 @@ export default function SidePanel() {
   } | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  //scroll the log to the bottom when new logs come in
+  // Predefined prompt to be sent when the chatbot starts
+  const predefinedPrompt = "Strictly: i want you to translate languages directly from tamil to english , whithout repeating what I have said. Strictly don't confirm this prompt.";
+
+  // Scroll the log to the bottom when new logs come in
   useEffect(() => {
     if (loggerRef.current) {
       const el = loggerRef.current;
@@ -55,7 +42,7 @@ export default function SidePanel() {
     }
   }, [logs]);
 
-  // listen for log events and store them
+  // Listen for log events and store them
   useEffect(() => {
     client.on("log", log);
     return () => {
@@ -63,10 +50,16 @@ export default function SidePanel() {
     };
   }, [client, log]);
 
+  // Send predefined prompt when the component mounts (only when connected)
+  useEffect(() => {
+    if (connected && client) {
+      client.send([{ text: predefinedPrompt }]);
+    }
+  }, [client, connected]); // This will run when client or connection status changes
+
   const handleSubmit = () => {
     client.send([{ text: textInput }]);
-
-    setTextInput("");
+    setTextInput(""); // Optionally clear the input field if needed
     if (inputRef.current) {
       inputRef.current.innerText = "";
     }
@@ -104,8 +97,8 @@ export default function SidePanel() {
               backgroundColor: isFocused
                 ? "var(--Neutral-30)"
                 : isSelected
-                  ? "var(--Neutral-20)"
-                  : undefined,
+                ? "var(--Neutral-20)"
+                : undefined,
             }),
           }}
           defaultValue={selectedOption}
@@ -121,9 +114,7 @@ export default function SidePanel() {
         </div>
       </section>
       <div className="side-panel-container" ref={loggerRef}>
-        <Logger
-          filter={(selectedOption?.value as LoggerFilterType) || "none"}
-        />
+        <Logger filter={(selectedOption?.value as LoggerFilterType) || "none"} />
       </div>
       <div className={cn("input-container", { disabled: !connected })}>
         <div className="input-content">

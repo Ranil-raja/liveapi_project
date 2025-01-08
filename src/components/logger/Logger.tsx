@@ -226,6 +226,7 @@ const filters: Record<LoggerFilterType, (log: StreamingLog) => boolean> = {
 const component = (log: StreamingLog) => {
   if (typeof log.message === "string") {
     return PlainTextMessage;
+    
   }
   if (isClientContentMessage(log.message)) {
     return ClientContentLog;
